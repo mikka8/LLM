@@ -1,62 +1,36 @@
-/**
- * Cypress Configuration File
- * 
- * Документация: https://docs.cypress.io/guides/references/configuration
- */
-
 const { defineConfig } = require('cypress')
 
 module.exports = defineConfig({
   e2e: {
-    // Only run tests.cy.js (exclude translator_critic.cy.js)
-    specPattern: 'cypress/e2e/tests.cy.js',
-    
-    // Base URL приложения (используется для cy.visit('/'))
-    // Для локальной разработки: http://localhost:5000
-    // Для Codespaces: будет автоматически перенаправлен
+    // Базовый URL приложения
     baseUrl: 'http://localhost:5000',
-
-    // Timeout для ожидания элементов (в миллисекундах)
-    defaultCommandTimeout: 4000,
     
-    // Timeout для ожидания сетевых запросов и ответов
-    requestTimeout: 5000,
+    // КРИТИЧЕСКИ ВАЖНО: Новый путь к тестам
+    specPattern: 'tests/ui/cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
     
-    // Timeout для ожидания загрузки страницы
-    pageLoadTimeout: 30000,
-
-    // Количество попыток перезапуска при падении теста (в CI)
-    retries: {
-      runMode: 1,
-      openMode: 0
-    },
-
-    // Видеозапись тестов при запуске в headless режиме
-    video: true,
-
-    // Скриншоты при ошибках
-    screenshotOnRunFailure: true,
-
-    // Установка окна браузера при запуске
+    // Путь к support файлам
+    supportFile: 'tests/ui/cypress/support/e2e.js',
+    
+    // Отключаем fixtures (у вас их нет)
+    fixturesFolder: false,
+    
+    // Путь для скриншотов
+    screenshotsFolder: 'tests/ui/cypress/screenshots',
+    
+    // Путь для видео
+    videosFolder: 'tests/ui/cypress/videos',
+    
+    // Таймауты (важно для API запросов)
+    defaultCommandTimeout: 10000,
+    requestTimeout: 10000,
+    responseTimeout: 10000,
+    
+    // Размер окна браузера
     viewportWidth: 1280,
     viewportHeight: 720,
-
+    
     setupNodeEvents(on, config) {
-      // Здесь можно добавить плагины и хуки (events)
-      // Пример: обработчик для скиппинга тестов
-      // on('task', {
-      //   log: (message) => {
-      //     console.log(message)
-      //     return null
-      //   }
-      // })
-    }
+      // implement node event listeners here
+    },
   },
-
-  component: {
-    devServer: {
-      framework: 'react',
-      bundler: 'webpack'
-    }
-  }
 })
