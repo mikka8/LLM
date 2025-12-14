@@ -20,11 +20,11 @@
             <h3 class="mb-3">AI Translator & Critic</h3>
             <p class="text-muted small">Введите текст, выберите целевой язык. Приложение переведёт текст и оценит качество перевода.</p>
 
-            <!-- Форма отправляет POST на тот же маршрут '/' -->
-            <form method="post">
+            <!-- Форма больше не отправляется — вместо этого используется JavaScript -->
+            <form id="translatorForm" onsubmit="return false;">
               <div class="mb-3">
                 <label for="original_text" class="form-label"><strong>Исходный текст</strong></label>
-                <textarea id="original_text" name="original_text" class="form-control" rows="6" placeholder="Введите текст для перевода...">{{ original }}</textarea>
+                <textarea id="original_text" name="original_text" class="form-control" rows="6" placeholder="Введите текст для перевода..."></textarea>
                 <div class="form-text">Поддерживаемые языки: Английский, Французский, Немецкий.</div>
               </div>
 
@@ -38,10 +38,10 @@
                   </select>
                 </div>
                 <div class="col-md-6 d-flex align-items-end">
-                  <!-- Две кнопки, как просили. Сервер выполнит перевод и оценку последовательно. -->
+                  <!-- Две кнопки, теперь они вызывают JavaScript функции -->
                   <div class="btn-group w-100" role="group">
-                    <button type="submit" class="btn btn-primary">Перевести</button>
-                    <button type="submit" class="btn btn-outline-secondary">Оценить при помощи LLM-as-a-Judge</button>
+                    <button type="button" id="translateBtn" class="btn btn-primary">Перевести</button>
+                    <button type="button" id="evaluateBtn" class="btn btn-outline-secondary">Оценить при помощи LLM-as-a-Judge</button>
                   </div>
                 </div>
               </div>
@@ -54,17 +54,17 @@
             <h5>Результаты</h5>
             <div class="mb-3">
               <label class="form-label"><strong>Оригинал</strong></label>
-              <div class="p-3 bg-white border rounded">{{ original }}</div>
+              <div id="originalResult" class="p-3 bg-white border rounded">(результат будет выведен здесь)</div>
             </div>
 
             <div class="mb-3">
               <label class="form-label"><strong>Перевод</strong></label>
-              <div class="p-3 bg-white border rounded">{{ translation }}</div>
+              <div id="translationResult" class="p-3 bg-white border rounded">(результат будет выведен здесь)</div>
             </div>
 
             <div class="mb-0">
               <label class="form-label"><strong>Оценка качества (Вердикт от LLM)</strong></label>
-              <div class="p-3 bg-white border rounded">{{ evaluation }}</div>
+              <div id="evaluationResult" class="p-3 bg-white border rounded">(результат будет выведен здесь)</div>
             </div>
           </div>
 
@@ -74,5 +74,99 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      /**
+       * API ENDPOINT и MODELS
+       * 
+       * Константы для вызова внешнего LLM API. Браузер будет отправлять запросы напрямую
+       * на этот endpoint, что позволит Cypress перехватить запросы через cy.intercept().
+       */
+      const API_ENDPOINT = 'https://api.mentorpiece.org/v1/process-ai-request'
+      const TRANSLATION_MODEL = 'Qwen/Qwen3-VL-30B-A3B-Instruct'
+      const EVALUATION_MODEL = 'claude-sonnet-4-5-20250929'
+
+      /**
+       * Функция для вызова LLM API из браузера
+       * @param {string} modelName - Название модели (Qwen или Claude)
+       * @param {string} prompt - Промпт для модели
+       * @returns {Promise<string>} - Ответ от API
+       */
+      async function callLLM(modelName, prompt) {
+        try {
+          const response = await fetch(API_ENDPOINT, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model_name: modelName,
+              prompt: prompt,
+            })
+          })
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}))
+            return `[Ошибка API ${response.status}] ${JSON.stringify(errorData) || response.statusText}`
+          }
+
+          const data = await response.json()
+          return data.response || JSON.stringify(data)
+        } catch (error) {
+          return `[Сетевая ошибка] ${error.message}`
+        }
+      }
+
+      /**
+       * Обработчик для кнопки "Перевести"
+       * Отправляет текст на модель Qwen для перевода
+       */
+      document.getElementById('translateBtn').addEventListener('click', async () => {
+        const originalText = document.getElementById('original_text').value
+        const targetLang = document.getElementById('target_lang').value
+
+        if (!originalText.trim()) {
+          alert('Пожалуйста, введите текст для перевода')
+          return
+        }
+
+        // Отображаем исходный текст
+        document.getElementById('originalResult').textContent = originalText
+
+        // Вызываем API для перевода
+        const prompt = `Translate the following text to ${targetLang}:\n\n${originalText}`
+        const translation = await callLLM(TRANSLATION_MODEL, prompt)
+        
+        // Отображаем результат перевода (или ошибку)
+        document.getElementById('translationResult').textContent = translation
+        console.log('Результат перевода:', translation)
+      })
+
+      /**
+       * Обработчик для кнопки "Оценить"
+       * Отправляет текст и перевод на модель Claude для оценки
+       */
+      document.getElementById('evaluateBtn').addEventListener('click', async () => {
+        const originalText = document.getElementById('original_text').value
+        const translationText = document.getElementById('translationResult').textContent
+
+        if (!originalText.trim()) {
+          alert('Пожалуйста, сначала выполните перевод')
+          return
+        }
+
+        if (translationText === '(результат будет выведен здесь)') {
+          alert('Пожалуйста, сначала выполните перевод текста')
+          return
+        }
+
+        // Вызываем API для оценки
+        const prompt = `Evaluate the quality of the following translation.\nOriginal: ${originalText}\nTranslation: ${translationText}\nProvide a brief quality assessment.`
+        const evaluation = await callLLM(EVALUATION_MODEL, prompt)
+        
+        // Отображаем результат оценки (или ошибку)
+        document.getElementById('evaluationResult').textContent = evaluation
+        console.log('Результат оценки:', evaluation)
+      })
+    </script>
   </body>
 </html>

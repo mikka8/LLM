@@ -1,0 +1,30 @@
+{
+  "name": "llm-translator-critic",
+  "version": "1.0.0",
+  "description": "AI Translator & Critic - E2E Tests with Cypress",
+  "main": "src/app.py",
+  "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "cypress:run:headed": "cypress run --headed",
+    "cypress:run:spec": "cypress run --spec cypress/e2e/translator_critic.cy.js",
+    "cypress:debug": "cypress open --env DEBUG='*'",
+    "cypress:run:linux": "xvfb-run -a npx cypress run --browser electron",
+    "test": "cypress run --headless"
+  },
+  "keywords": [
+    "cypress",
+    "e2e",
+    "testing",
+    "translator",
+    "ai"
+  ],
+  "author": "QA Team",
+  "license": "MIT",
+  "devDependencies": {
+    "cypress": "^13.6.6"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
