@@ -46,7 +46,7 @@ pytest tests/unit/test_app.py -v
 - ✅ Обработка сетевых ошибок (RequestException)
 - ✅ Обработка HTTP ошибок (500)
 
-**Детали:** См. комментарии в `tests/unit/test_app.py`
+**Детали:** См. `UNIT_TESTS_README.md
 
 ---
 
@@ -159,9 +159,10 @@ LLM/
 
 | Документ | Описание |
 |----------|---------|
-| `README_CYPRESS.md` | Полная инструкция по Cypress тестам |
-| `CYPRESS_ARCHITECTURE.md` | ASCII диаграммы архитектуры |
-| `AQA_README.txt` | Детальное описание каждого security теста |
+| `UNIT_TESTS_README.md` | Детальная документация основных unit-тестов (4 теста) |
+| `README_CYPRESS.md` | Полная инструкция по Cypress тестам (7 тестов) |
+| `CYPRESS_ARCHITECTURE.md` | ASCII диаграммы архитектуры UI-тестов |
+| `AQA_README.txt` | Детальная документация security тестов (11 тестов) |
 
 ---
 
