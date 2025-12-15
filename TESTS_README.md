@@ -23,6 +23,7 @@
 pytest tests/unit/ -v
 
 2. UI тесты (требует запущенного Flask)
+
 Терминал 1:
 python src/app.py
 
@@ -160,7 +161,6 @@ LLM/
 |----------|---------|
 | `README_CYPRESS.md` | Полная инструкция по Cypress тестам |
 | `CYPRESS_ARCHITECTURE.md` | ASCII диаграммы архитектуры |
-| `SECURITY_TESTS_README.md` | Документация security тестов |
 | `AQA_README.txt` | Детальное описание каждого security теста |
 
 ---
