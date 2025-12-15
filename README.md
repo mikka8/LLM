@@ -10,7 +10,7 @@ Flask приложение для перевода текста и оценки 
 - **[docs/UNIT_TESTS_README.md](docs/UNIT_TESTS_README.md)** — Unit тесты
 - **[docs/SECURITY_TESTS_README.md](docs/SECURITY_TESTS_README.md)** — Security тесты
 - **[docs/README_CYPRESS.md](docs/README_CYPRESS.md)** — UI тесты (Cypress)
-- **[docs/CYPRESS_ARCHITECTURE.md](docs/CYPRESS_ARCHITECTURE.md)** — Архитектура
+- **[docs/CYPRESS_ARCHITECTURE.md](docs/CYPRESS_ARCHITECTURE.md)** — Архитектура Cypress E2E-тестов
 
 ## 🚀 Быстрый старт
 
