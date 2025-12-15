@@ -7,7 +7,7 @@
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "cypress:run:headed": "cypress run --headed",
-    "cypress:run:spec": "cypress run --spec cypress/e2e/translator_critic.cy.js",
+    "cypress:run:spec": "cypress run --spec tests/ui/cypress/e2e/translator_critic.cy.js",
     "cypress:debug": "cypress open --env DEBUG='*'",
     "cypress:run:linux": "xvfb-run -a npx cypress run --browser electron",
     "test": "cypress run --headless"
